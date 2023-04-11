@@ -1,0 +1,25 @@
+{
+    "name": "lamp-oauth-server",
+    "main": "app.js",
+    "type": "module",
+    "dependencies": {
+        "crypto": "^1.0.1",
+        "desm": "^1.3.0",
+        "dotenv": "^16.0.3",
+        "ejs": "^3.1.9",
+        "express": "^4.18.2",
+        "ioredis": "^5.3.1",
+        "lodash": "^4.17.21",
+        "mongodb": "^5.2.0",
+        "oidc-provider": "^8.0.0"
+    },
+    "scripts": {
+        "start": "source .env; node src/app.js"
+    },
+    "resolve": {
+        "extensions": [
+            ".js",
+            ".jsx"
+        ]
+    }
+}

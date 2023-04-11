@@ -1,0 +1,8 @@
+
+<form autocomplete="off" action="/interaction/<%= uid %>/reset" method="post">
+  <input required type="text" name="username" placeholder="Enter any login" <% if (!params.login_hint) { %>autofocus="on"<% } else { %> value="<%= params.login_hint %>" <% } %>>
+  <input type="password" name="password" placeholder="password" <% if (params.login_hint) { %>autofocus="on"<% } %>>
+  <input required type="password" name="new_password" placeholder="and new password" <% if (params.login_hint) { %>autofocus="on"<% } %>>
+
+  <button type="submit" class="login login-submit">Reset</button>
+</form>
