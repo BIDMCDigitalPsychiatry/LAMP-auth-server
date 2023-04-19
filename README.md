@@ -40,5 +40,5 @@ Now we'll configure the LAMP-server to use the LAMP-oauth-server as authorizatio
 - TOKEN_SECRET: The secret to sign the access tokens issued by the server
 - OAUTH_REDIRECT_URI: The dashboard uri which processes OAuth access code (https://dashboard.lamp.digital/oauth)
 
-## Run
-Run `npm i` and then `npm start`
+## Development
+Run `npm i` and then `npm dev`

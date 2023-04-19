@@ -2,7 +2,7 @@ import crypto from "crypto"
 /**
  * If the data could not be encrypted or is invalid, returns `undefined`.
  */
-export const Encrypt = (data, mode = "Rijndael") => {
+export const Encrypt = (data: string, mode = "Rijndael") => {
     try {
       if (mode === "Rijndael") {
         const cipher = crypto.createCipheriv("aes-256-ecb", process.env.DB_KEY || "", "")
@@ -19,7 +19,7 @@ export const Encrypt = (data, mode = "Rijndael") => {
 /**
  * If the data could not be decrypted or is invalid, returns `undefined`.
  */
-export const Decrypt = (data, mode = "Rijndael") => {
+export const Decrypt = (data: string, mode = "Rijndael") => {
 try {
     if (mode === "Rijndael") {
     const cipher = crypto.createDecipheriv("aes-256-ecb", process.env.DB_KEY || "", "")

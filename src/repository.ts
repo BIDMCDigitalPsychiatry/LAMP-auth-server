@@ -1,22 +1,24 @@
-import { MongoClient } from 'mongodb'; // eslint-disable-line import/no-unresolved
+import { Db, MongoClient } from 'mongodb'; // eslint-disable-line import/no-unresolved
 
 import { Decrypt, Encrypt } from './utils.js';
 
-let DB;
+let DB: Db;
 const COLLECTION_NAME = "credential";
 
+type Credential = {access_key: string, secret_key?: null | string, _deleted?: boolean};
+
 class Repository {
-  static _verifySecret(credential, secret) {
+  static _verifySecret(credential: Credential, secret: null | string) {
     const hasSecret = !!credential.secret_key && credential.secret_key.length > 0;
     const providesSecret = !!secret && secret.length > 0;
-    if (hasSecret && providesSecret) {
+    if (credential.secret_key && hasSecret && providesSecret) {
       const result = Decrypt(credential.secret_key, "AES256") === secret;
       return result;
     }
     return hasSecret === providesSecret;
   }
 
-  static async find(username, secret) {
+  static async find(username: string, secret: string | null) {
     if (!username) {
       throw new Error("Missing username");
     }
@@ -29,7 +31,7 @@ class Repository {
     return {accountId: account.access_key, federatedId: account._id};
   }
 
-  static async updateSecret(username, secret, newSecret) {
+  static async updateSecret(username: string, secret: null | string, newSecret: string) {
     if (!newSecret) {
       throw new Error("Missing new secret");
     }
@@ -47,13 +49,16 @@ class Repository {
   }
 
   static coll() {
-    const collection = DB.collection(COLLECTION_NAME);
+    const collection = DB.collection<Credential>(COLLECTION_NAME);
     return collection;
   }
 
   // This is not part of the required or supported API, all initialization should happen before
   // you pass the adapter to `new Provider`
   static async connect() {
+    if (!process.env.MONGODB_URI) {
+      throw new Error("Can't connect to db env MONGODB_URI missing");
+    }
     const connection = await MongoClient.connect(process.env.MONGODB_URI);
 
     const db = process.env.MONGODB_URI?.replace("/?", "?").split("/").reverse()[0]?.split("?")[0].substring(0, 30)
