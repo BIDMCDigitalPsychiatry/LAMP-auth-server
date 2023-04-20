@@ -1,4 +1,6 @@
-export default {
+import { Configuration } from "oidc-provider";
+
+const configuration: Configuration = {
   jwks: {
       keys: [{
           'kty': 'RSA',
@@ -44,7 +46,7 @@ export default {
                   }
               }
 
-              throw new errors.InvalidTarget();
+              throw new Error("Invalid Target");
           }
       }
   },
@@ -67,3 +69,5 @@ export default {
     keys: ["SigningKeys"]
   }
 };
+
+export default configuration;

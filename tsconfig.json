@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "es6",
+    "module": "ESNext",
+    "allowJs": true,
+    "checkJs": true,
+    "rootDirs": [
+        "./src"
+    ],
+    "outDir": "./build",
+    "esModuleInterop": true,
+    "strict": true,
+    "inlineSourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "nodenext",
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "include": ["src"],
+}

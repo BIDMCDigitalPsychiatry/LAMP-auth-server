@@ -1,25 +1,13 @@
 /* eslint-disable no-console, camelcase, no-unused-vars */
 import { strict as assert } from 'node:assert';
-import * as querystring from 'node:querystring';
-import { inspect } from 'node:util';
-
-import { urlencoded } from 'express'; // eslint-disable-line import/no-unresolved
+import Express, { NextFunction, urlencoded, Response, Request} from 'express'; // eslint-disable-line import/no-unresolved
+import Provider from 'oidc-provider';
 
 import Repository from './repository.js';
 
 const body = urlencoded({ extended: false });
 
-const keys = new Set();
-const debug = (obj) => querystring.stringify(Object.entries(obj).reduce((acc, [key, value]) => {
-  keys.add(key);
-  if (!value || value.length === 0) return acc;
-  acc[key] = inspect(value, { depth: null });
-  return acc;
-}, {}), '<br/>', ': ', {
-  encodeURIComponent(value) { return keys.has(value) ? `<strong>${value}</strong>` : value; },
-});
-
-export default (app, provider) => {
+export default (app: Express.Application, provider: Provider) => {
   app.use((req, res, next) => {
     const orig = res.render;
     // you'll probably want to use a full blown render engine capable of layouts
@@ -28,6 +16,7 @@ export default (app, provider) => {
         if (err) throw err;
         orig.call(res, '_layout', {
           ...locals,
+          // @ts-expect-error Type mismatch
           body: html,
         });
       });
@@ -35,7 +24,7 @@ export default (app, provider) => {
     next();
   });
 
-  function setNoCache(req, res, next) {
+  function setNoCache(req: Request, res: Response, next:  NextFunction) {
     res.set('cache-control', 'no-store');
     next();
   }
@@ -43,9 +32,12 @@ export default (app, provider) => {
   app.get('/interaction/:uid', setNoCache, async (req, res, next) => {
     try {
       const {
-        uid, prompt, params, session,
+        uid, prompt, params,
       } = await provider.interactionDetails(req, res);
 
+      if (!params.client_id || typeof params.client_id !== "string") {
+        throw new Error("Missing param client_id");
+      }
       const client = await provider.Client.find(params.client_id);
 
       switch (prompt.name) {
@@ -56,11 +48,6 @@ export default (app, provider) => {
             details: prompt.details,
             params,
             title: 'Sign-in',
-            session: session ? debug(session) : undefined,
-            dbg: {
-              params: debug(params),
-              prompt: debug(prompt),
-            },
           });
         }
         case 'consent': {
@@ -70,11 +57,6 @@ export default (app, provider) => {
             details: prompt.details,
             params,
             title: 'Authorize',
-            session: session ? debug(session) : undefined,
-            dbg: {
-              params: debug(params),
-              prompt: debug(prompt),
-            },
           });
         }
         default:
@@ -87,9 +69,12 @@ export default (app, provider) => {
 
   app.get('/interaction/:uid/password', setNoCache, body, async(req, res, next) => {
     const {
-      uid, prompt, params, session,
+      uid, prompt, params,
     } = await provider.interactionDetails(req, res);
 
+    if (!params.client_id || typeof params.client_id !== "string") {
+      throw new Error("Missing param client_id");
+    }
     const client = await provider.Client.find(params.client_id);
     return res.render('reset', {
       client,
@@ -97,11 +82,6 @@ export default (app, provider) => {
       details: prompt.details,
       params,
       title: 'Reset Password',
-      session: session ? debug(session) : undefined,
-      dbg: {
-        params: debug(params),
-        prompt: debug(prompt),
-      },
     });
   })
 
@@ -144,8 +124,15 @@ export default (app, provider) => {
   app.post('/interaction/:uid/confirm', setNoCache, body, async (req, res, next) => {
     try {
       const interactionDetails = await provider.interactionDetails(req, res);
-      const { prompt: { name, details }, params, session: { accountId } } = interactionDetails;
+      const { prompt: { name, details }, params, session } = interactionDetails;
+      if (!session) {
+        throw new Error("Invalid Session. No Account Id found");
+      }
+      const {accountId} = session;
       assert.equal(name, 'consent');
+      if (!params.client_id || typeof params.client_id !== "string") {
+        throw new Error("Missing param client_id");
+      }
 
       let { grantId } = interactionDetails;
       let grant;
@@ -160,11 +147,16 @@ export default (app, provider) => {
           clientId: params.client_id,
         });
       }
+      if (!grant) {
+        throw new Error("Can't find nor create grant.");
+      }
 
       if (details.missingOIDCScope) {
+        // @ts-expect-error type mismatch
         grant.addOIDCScope(details.missingOIDCScope.join(' '));
       }
       if (details.missingOIDCClaims) {
+        // @ts-expect-error type mismatch
         grant.addOIDCClaims(details.missingOIDCClaims);
       }
       if (details.missingResourceScopes) {
@@ -175,7 +167,7 @@ export default (app, provider) => {
 
       grantId = await grant.save();
 
-      const consent = {};
+      const consent: {grantId?: string} = {};
       if (!interactionDetails.grantId) {
         // we don't have to pass grantId to consent, we're just modifying existing one
         consent.grantId = grantId;
@@ -200,18 +192,18 @@ export default (app, provider) => {
     }
   });
 
-  app.use(async (err, req, res, next) => {
-    // await provider.interactionFinished(req, res, {error: err.message}, { mergeWithLastSubmission: false });
-
-    // next(err.message);
+  app.use(async (err: any, req: Request, res: Response, next: NextFunction) => {
     console.log(err.message)
     res.status(404);
 
     // respond with html page
     if (req.accepts('html')) {
       const {
-        uid, prompt, params, session,
+        uid, prompt, params,
       } = await provider.interactionDetails(req, res);
+      if (!params.client_id || typeof params.client_id !== "string") {
+        throw new Error("Missing param client_id");
+      }
       const client = await provider.Client.find(params.client_id);
 
       res.render('error', {
@@ -221,11 +213,6 @@ export default (app, provider) => {
         params,
         title: "Oops there's been a problem",
         error: err.message,
-        session: session ? debug(session) : undefined,
-        dbg: {
-          params: debug(params),
-          prompt: debug(prompt),
-        },
       });
       return;
     }

@@ -1,29 +1,29 @@
 import * as path from 'node:path';
 import * as url from 'node:url';
-
-import dotenv  from "dotenv"
-import { dirname } from 'desm';
+import {dirname} from 'desm';
+import dotenv  from 'dotenv';
 import Provider from 'oidc-provider';
 import express from 'express';
+
+dotenv.config()
+
 import routes from './routes.js';
 import Repository from './repository.js';
 import configuration from './configuration.js';
 import RedisAdapter from './adapter.js';
 
-dotenv.config()
-const __dirname = dirname(import.meta.url);
-
 const app = express();
 
+const __dirname = dirname(import.meta.url);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 let server;
 try {
   Repository.connect();
-
   const prod = process.env.NODE_ENV === 'production';
   if (process.env.REDIS_URL) {
+    console.log("Using Redis")
     configuration.adapter = RedisAdapter;
   }
 
