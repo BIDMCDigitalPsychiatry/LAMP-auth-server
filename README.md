@@ -52,20 +52,6 @@ To configure the server locally you'll need to define on which local port will t
 Therefore the configured urls would be:
 
 ### LAMP-oauth-server ENV
-- LISTEN_PORT=3002
-
-### LAMP-server ENV
-- OAUTH_AUTH_URL=http://localhost/3002/auth
-- OAUTH_TOKEN_URL=http://localhost/3002/token
-
-### Run
-Run `npm i` and then `npm dev`
-
-## Production
-To configure the server for production we'll need to run a new docker configured with the LAMP-server as client.
-For that we'll need to change the configuration.js file.
-
-### LAMP-oauth-server ENV
 - MONGODB_URI="mongodb://root:password@localhost"
 - OAUTH_CLIENT_ID="lamp-server"
 - OAUTH_CLIENT_SECRET="lamp-client-secret"
@@ -81,6 +67,12 @@ For that we'll need to change the configuration.js file.
 - ROOT_KEY="2646294A404E635166546A576E5A7234753778214125442A472D4B6150645367"
 - OAUTH_AUTH_URL="http://localhost/3002/auth"
 - OAUTH_TOKEN_URL="http://localhost/3002/token"
+
+### Run
+Run `npm i` and then `npm dev`
+
+## Production
+To configure the server for production we'll need to run a new docker configured with the LAMP-server as client.
 
 ### Run
 Create Docker image and replace src/.jwks.json file with specifically generated [JWKS keys](https://github.com/panva/node-oidc-provider/blob/main/docs/README.md#jwks)
