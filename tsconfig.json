@@ -13,6 +13,7 @@
     "inlineSourceMap": true,
     "allowSyntheticDefaultImports": true,
     "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
   },
   "ts-node": {
     "esm": true

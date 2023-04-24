@@ -4,13 +4,15 @@ import {dirname} from 'desm';
 import dotenv  from 'dotenv';
 import Provider from 'oidc-provider';
 import express from 'express';
+import isEmpty from 'lodash/isEmpty.js';
 
 dotenv.config()
 
 import routes from './routes.js';
 import Repository from './repository.js';
-import configuration from './configuration.js';
+import getConfiguration from './configuration.js';
 import RedisAdapter from './adapter.js';
+import jwksKeys from "./.jwks.json" assert { type: "json" };
 
 const app = express();
 
@@ -20,6 +22,20 @@ app.set('view engine', 'ejs');
 
 let server;
 try {
+  if (!process.env.OAUTH_CLIENT_ID
+     || !process.env.OAUTH_CLIENT_SECRET
+     || !process.env.DASHBOARD_BASE_URI
+     || !process.env.MONGODB_URI
+     || !process.env.LISTEN_PORT
+     || !process.env.ISSUER_URI
+     || !process.env.ROOT_KEY) {
+    throw new Error("Missing Required Configuration");
+  }
+  
+  if (isEmpty(jwksKeys)) {
+    throw new Error("Missing JWKS KEYS");
+  }
+  const configuration = getConfiguration(jwksKeys, process.env.OAUTH_CLIENT_ID, process.env.OAUTH_CLIENT_SECRET, process.env.DASHBOARD_BASE_URI, process.env.TOS_URI, process.env.POLICY_URI, process.env.COOKIES_KEYS?.split(","));
   Repository.connect();
   const prod = process.env.NODE_ENV === 'production';
   if (process.env.REDIS_URL) {
