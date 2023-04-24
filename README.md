@@ -27,7 +27,7 @@ These are not extrictly required.
 #### .jwks.json
 This file should have an array with the JWKS keys to sign tokens. [jwks set format](https://github.com/panva/node-oidc-provider/blob/main/docs/README.md#jwks)
 
-#### Understanding configuration.js
+#### Understanding configuration.ts
 This is a helper to get the OIDC Configuration, to learn more about it visiting the [official documentation](https://github.com/panva/node-oidc-provider/blob/main/docs/README.md#configuration-options)
 - jwks.keys: Set of jwks keys to sign tokens [jwks set format](https://github.com/panva/node-oidc-provider/blob/main/docs/README.md#jwks)
 - clients: Here we define the LAMP-server [client](https://github.com/panva/node-oidc-provider/blob/main/docs/README.md#clients)
