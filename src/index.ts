@@ -35,7 +35,7 @@ try {
   if (isEmpty(jwksKeys)) {
     throw new Error("Missing JWKS KEYS");
   }
-  const configuration = getConfiguration(jwksKeys, process.env.OAUTH_CLIENT_ID, process.env.OAUTH_CLIENT_SECRET, process.env.DASHBOARD_BASE_URI, process.env.TOS_URI, process.env.POLICY_URI, process.env.COOKIES_KEYS?.split(","));
+  const configuration = getConfiguration(jwksKeys, process.env.OAUTH_CLIENT_ID, process.env.OAUTH_CLIENT_SECRET, process.env.DASHBOARD_BASE_URI, process.env.DASHBOARD_REDIRECT_URI, process.env.TOS_URI, process.env.POLICY_URI, process.env.COOKIES_KEYS?.split(","));
   Repository.connect();
   const prod = process.env.NODE_ENV === 'production';
   if (process.env.REDIS_URL) {
