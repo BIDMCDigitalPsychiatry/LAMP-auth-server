@@ -1,6 +1,6 @@
 import { Configuration, JWK } from "oidc-provider";
 
-const getConfiguration: (jwksKeys: JWK[], clientId: string, clientSecret: string, clientRedirectBaseURI: string, tosURI?: string, policyURI?: string, cookiesKeys?: string[]) => Configuration = (jwksKeys, clientId, clientSecret, clientRedirectBaseURI, tosURI, policyURI, cookiesKeys) => {
+const getConfiguration: (jwksKeys: JWK[], clientId: string, clientSecret: string, clientBaseURI: string, clientRedirectURI?: string, tosURI?: string, policyURI?: string, cookiesKeys?: string[]) => Configuration = (jwksKeys, clientId, clientSecret, clientBaseURI, clientRedirectURI, tosURI, policyURI, cookiesKeys) => {
     return {
         jwks: {
             keys: jwksKeys
@@ -44,8 +44,8 @@ const getConfiguration: (jwksKeys: JWK[], clientId: string, clientSecret: string
                 client_secret: clientSecret,
                 grant_types: ['authorization_code'],
                 response_types: ['code'],
-                redirect_uris: [`${clientRedirectBaseURI}/oauth`],
-                post_logout_redirect_uris: [clientRedirectBaseURI],
+                redirect_uris: [clientRedirectURI ?? `${clientBaseURI}/oauth.html`],
+                post_logout_redirect_uris: [clientBaseURI],
                 tos_uri: tosURI,
                 policy_uri: policyURI,
             }],

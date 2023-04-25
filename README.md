@@ -19,6 +19,7 @@ The next variables are required for the oauth server to work.
 - ROOT_KEY: The key to encrypt and decrypt passwords as it's configured in the LAMP-server
 
 These are not extrictly required.
+- DASHBOARD_REDIRECT_URI: If the redirect url is not the DASHBOARD_BASE_URI/oauth.html define it here
 - REDIS_URL: The url to connect the redis adatper to store session data if not provided will use in-memory storage
 - COOKIES_KEYS: List of keys (separated by comma) to validate [cookies](https://github.com/panva/node-oidc-provider/blob/main/docs/README.md#cookieskeys). ("FIRST_KEY,SECOND_KEY,THIRD_KEY")
 - TOS_URI: Terms of service URL
@@ -45,7 +46,7 @@ Now we'll configure the LAMP-server to use the LAMP-oauth-server as authorizatio
 - OAUTH_CLIENT_ID: The client_id defined in the OIDC configuration
 - OAUTH_CLIENT_SECRET: The client_secret defined in the OIDC configuration
 - TOKEN_SECRET: The secret to sign the access tokens issued by the server
-- OAUTH_REDIRECT_URI: The dashboard uri which processes OAuth access code (https://dashboard.lamp.digital/oauth)
+- OAUTH_REDIRECT_URI: The dashboard uri which processes OAuth access code (https://dashboard.lamp.digital/oauth.html)
 
 ## Development
 To configure the server locally you'll need to define on which local port will the auth server run. As the server is usually running on the 3000 and the dashboard is running in the 3001. We can use the 3002.
@@ -58,15 +59,16 @@ Therefore the configured urls would be:
 - ROOT_KEY="2646294A404E635166546A576E5A7234753778214125442A472D4B6150645367"
 - ISSUER_URI="http://localhost"
 - LISTEN_PORT=3002
-- DASHBOARD_BASE_URI="http://localhost/3001"
+- DASHBOARD_BASE_URI="http://localhost:3001"
 
 ### LAMP-server ENV
 - DB="mongodb://root:password@localhost
 - OAUTH_CLIENT_ID="lamp-server"
 - OAUTH_CLIENT_SECRET="lamp-client-secret"
 - ROOT_KEY="2646294A404E635166546A576E5A7234753778214125442A472D4B6150645367"
-- OAUTH_AUTH_URL="http://localhost/3002/auth"
-- OAUTH_TOKEN_URL="http://localhost/3002/token"
+- OAUTH_AUTH_URL="http://localhost:3002/auth"
+- OAUTH_TOKEN_URL="http://localhost:3002/token"
+- OAUTH_REDIRECT_URI: "http://localhost:3001/oauth.html"
 
 ### Run
 Run `npm i` and then `npm dev`
