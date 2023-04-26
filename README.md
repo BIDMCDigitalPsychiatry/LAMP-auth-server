@@ -12,13 +12,13 @@ The next variables are required for the oauth server to work.
 - OAUTH_CLIENT_SECRET: Define a client id for the LAMP-server
 - DASHBOARD_BASE_URI: The base uri of the dashboard (https://dashboard.lamp.digital)
 - MONGODB_URI: The uri to the mongodb as it's configured in the LAMP-server
-- LISTEN_PORT: The port on which the OAuth-Server should be listening:
-    - When using alongside docker should be the 3000 as it's the one configured in the dockerfile.
-    - When using it locally should match the base auth url on which the LAMP-server is pointing.
 - ISSUER_URI: The uri on which the OAuth-Server will be running (https://oauth.lamp.digital)
 - ROOT_KEY: The key to encrypt and decrypt passwords as it's configured in the LAMP-server
 
 These are not extrictly required.
+- LISTEN_PORT: The port on which the OAuth-Server should be listening. If this is not provided will use 3000 as default:
+    - When using alongside docker should be the 3000 as it's the one configured in the dockerfile. 
+    - When using it locally should match the base auth url on which the LAMP-server is pointing.
 - DASHBOARD_REDIRECT_URI: If the redirect url is not the DASHBOARD_BASE_URI/oauth.html define it here
 - REDIS_URL: The url to connect the redis adatper to store session data if not provided will use in-memory storage
 - COOKIES_KEYS: List of keys (separated by comma) to validate [cookies](https://github.com/panva/node-oidc-provider/blob/main/docs/README.md#cookieskeys). ("FIRST_KEY,SECOND_KEY,THIRD_KEY")
