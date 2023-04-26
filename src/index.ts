@@ -26,7 +26,6 @@ try {
      || !process.env.OAUTH_CLIENT_SECRET
      || !process.env.DASHBOARD_BASE_URI
      || !process.env.MONGODB_URI
-     || !process.env.LISTEN_PORT
      || !process.env.ISSUER_URI
      || !process.env.ROOT_KEY) {
     throw new Error("Missing Required Configuration");
@@ -70,8 +69,9 @@ try {
 
   routes(app, provider);
   app.use(provider.callback());
-  server = app.listen(process.env.LISTEN_PORT, () => {
-    console.log(`application is listening on port ${process.env.LISTEN_PORT}, check its /.well-known/openid-configuration`);
+  const listenPort = process.env.LISTEN_PORT ?? 3000
+  server = app.listen(listenPort, () => {
+    console.log(`application is listening on port ${listenPort}, check its /.well-known/openid-configuration`);
   });
 } catch (err) {
   if (server?.listening) server.close();
